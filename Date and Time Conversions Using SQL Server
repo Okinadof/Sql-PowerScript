@@ -1,0 +1,38 @@
+Problem
+There are many instances when dates and times don't show up at your doorstep in the format you'd like it to be, 
+nor does the output of a query fit the needs of the people viewing it. 
+One option is to format the data in the application itself. 
+Another option is to use the built-in functions SQL Server provides to format the date string for you.
+
+Solution
+SQL Server provides a number of options you can use to format a date/time string. One of the first considerations is the actual date/time needed.
+ The most common is the current date/time using getdate(). 
+ This provides the current date and time according to the server providing the date and time. If a universal date/time is needed, 
+ then getutcdate() should be used. To change the format of the date,  you convert the requested date to a string and specify the format number corresponding to the format needed.
+ DECLARE @counter INT = 0
+DECLARE @date DATETIME = '2006-12-30 00:38:54.840'
+
+CREATE TABLE #dateFormats (dateFormatOption int, dateOutput nvarchar(40))
+
+WHILE (@counter <= 150 )
+BEGIN
+   BEGIN TRY
+      INSERT INTO #dateFormats
+      SELECT CONVERT(nvarchar, @counter), CONVERT(nvarchar,@date, @counter) 
+      SET @counter = @counter + 1
+   END TRY
+   BEGIN CATCH;
+      SET @counter = @counter + 1
+      IF @counter >= 150
+      BEGIN
+         BREAK
+      END
+   END CATCH
+END
+
+SELECT * FROM #dateFormats
+
+
+select replace(convert(varchar, getdate(),101),'/','')   														------>12302006
+select replace(convert(varchar, getdate(),101),'/','') + replace(convert(varchar, getdate(),108),':','')		------>12302006004426
+	
